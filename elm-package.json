@@ -1,7 +1,7 @@
 {
     "version": "1.0.0",
     "summary": "Simple RPN calculator thingie ",
-    "repository": "https://github.com/oherrala/rpncalc",
+    "repository": "https://github.com/oherrala/rpncalc.git",
     "license": "MIT",
     "source-directories": [
         "."

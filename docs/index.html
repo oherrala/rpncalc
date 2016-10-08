@@ -7517,20 +7517,11 @@ var _elm_lang$html$Html_Events$Options = F2(
 	function (a, b) {
 		return {stopPropagation: a, preventDefault: b};
 	});
-var _oherrala$rpncalc$Main$pop = function (stack) {
-	var _p0 = stack;
-	if (_p0.ctor === 'Empty') {
-		return _elm_lang$core$Maybe$Nothing;
-	} else {
-		return _elm_lang$core$Maybe$Just(
-			{ctor: '_Tuple2', _0: _p0._1, _1: _p0._0});
-	}
-};
 var _oherrala$rpncalc$Main$viewStack = function (stack) {
 	var viewStack$ = F2(
 		function (stack, depth) {
-			var _p1 = stack;
-			if (_p1.ctor === 'Empty') {
+			var _p0 = stack;
+			if (_p0.ctor === 'Empty') {
 				return _elm_lang$core$Native_List.fromArray(
 					[]);
 			} else {
@@ -7542,27 +7533,27 @@ var _oherrala$rpncalc$Main$viewStack = function (stack) {
 						': ',
 						A2(
 							_elm_lang$core$Basics_ops['++'],
-							_elm_lang$core$Basics$toString(_p1._0),
+							_elm_lang$core$Basics$toString(_p0._0),
 							'\n')));
 				return A2(
 					_elm_lang$core$List_ops['::'],
 					_elm_lang$html$Html$text(row),
-					A2(viewStack$, _p1._1, depth + 1));
+					A2(viewStack$, _p0._1, depth + 1));
 			}
 		});
 	return A2(viewStack$, stack, 1);
 };
 var _oherrala$rpncalc$Main$viewPrompt = function (prompt) {
 	var prefix = '> ';
-	var _p2 = prompt;
-	if (_p2.ctor === 'Nothing') {
+	var _p1 = prompt;
+	if (_p1.ctor === 'Nothing') {
 		return _elm_lang$html$Html$text(prefix);
 	} else {
 		return _elm_lang$html$Html$text(
 			A2(
 				_elm_lang$core$Basics_ops['++'],
 				prefix,
-				_elm_lang$core$Basics$toString(_p2._0)));
+				_elm_lang$core$Basics$toString(_p1._0)));
 	}
 };
 var _oherrala$rpncalc$Main$Model = F2(
@@ -7571,6 +7562,18 @@ var _oherrala$rpncalc$Main$Model = F2(
 	});
 var _oherrala$rpncalc$Main$Empty = {ctor: 'Empty'};
 var _oherrala$rpncalc$Main$model = {stack: _oherrala$rpncalc$Main$Empty, prompt: _elm_lang$core$Maybe$Nothing};
+var _oherrala$rpncalc$Main$pop = function (stack) {
+	var _p2 = stack;
+	if (_p2.ctor === 'Empty') {
+		return {ctor: '_Tuple2', _0: _oherrala$rpncalc$Main$Empty, _1: _elm_lang$core$Maybe$Nothing};
+	} else {
+		return {
+			ctor: '_Tuple2',
+			_0: _p2._1,
+			_1: _elm_lang$core$Maybe$Just(_p2._0)
+		};
+	}
+};
 var _oherrala$rpncalc$Main$Item = F2(
 	function (a, b) {
 		return {ctor: 'Item', _0: a, _1: b};
@@ -7582,48 +7585,50 @@ var _oherrala$rpncalc$Main$push = F2(
 var _oherrala$rpncalc$Main$stackOp = F2(
 	function (f, s1) {
 		var _p3 = _oherrala$rpncalc$Main$pop(s1);
-		if (_p3.ctor === 'Nothing') {
-			return _elm_lang$core$Maybe$Nothing;
+		var s2 = _p3._0;
+		var value1 = _p3._1;
+		var _p4 = _oherrala$rpncalc$Main$pop(s2);
+		var s3 = _p4._0;
+		var value2 = _p4._1;
+		var _p5 = {ctor: '_Tuple2', _0: value1, _1: value2};
+		if (((_p5.ctor === '_Tuple2') && (_p5._0.ctor === 'Just')) && (_p5._1.ctor === 'Just')) {
+			return A2(
+				_oherrala$rpncalc$Main$push,
+				s3,
+				A2(f, _p5._1._0, _p5._0._0));
 		} else {
-			var _p4 = _oherrala$rpncalc$Main$pop(_p3._0._0);
-			if (_p4.ctor === 'Nothing') {
-				return _elm_lang$core$Maybe$Nothing;
-			} else {
-				var res = A2(f, _p4._0._1, _p3._0._1);
-				return _elm_lang$core$Maybe$Just(
-					A2(_oherrala$rpncalc$Main$Item, res, _p4._0._0));
-			}
+			return _oherrala$rpncalc$Main$Empty;
 		}
 	});
 var _oherrala$rpncalc$Main$update = F2(
 	function (msgs, model) {
-		var _p5 = msgs;
-		switch (_p5.ctor) {
+		var _p6 = msgs;
+		switch (_p6.ctor) {
 			case 'Number':
-				var _p7 = _p5._0;
-				var _p6 = model.prompt;
-				if (_p6.ctor === 'Nothing') {
+				var _p8 = _p6._0;
+				var _p7 = model.prompt;
+				if (_p7.ctor === 'Nothing') {
 					return _elm_lang$core$Native_Utils.update(
 						model,
 						{
-							prompt: _elm_lang$core$Maybe$Just(_p7)
+							prompt: _elm_lang$core$Maybe$Just(_p8)
 						});
 				} else {
 					return _elm_lang$core$Native_Utils.update(
 						model,
 						{
-							prompt: _elm_lang$core$Maybe$Just((_p6._0 * 10) + _p7)
+							prompt: _elm_lang$core$Maybe$Just((_p7._0 * 10) + _p8)
 						});
 				}
 			case 'Enter':
-				var _p8 = model.prompt;
-				if (_p8.ctor === 'Nothing') {
+				var _p9 = model.prompt;
+				if (_p9.ctor === 'Nothing') {
 					return model;
 				} else {
 					return _elm_lang$core$Native_Utils.update(
 						model,
 						{
-							stack: A2(_oherrala$rpncalc$Main$push, model.stack, _p8._0),
+							stack: A2(_oherrala$rpncalc$Main$push, model.stack, _p9._0),
 							prompt: _elm_lang$core$Maybe$Nothing
 						});
 				}
@@ -7631,58 +7636,37 @@ var _oherrala$rpncalc$Main$update = F2(
 				return _elm_lang$core$Native_Utils.update(
 					model,
 					{
-						stack: function () {
-							var _p9 = A2(
-								_oherrala$rpncalc$Main$stackOp,
-								F2(
-									function (x, y) {
-										return x + y;
-									}),
-								model.stack);
-							if (_p9.ctor === 'Nothing') {
-								return _oherrala$rpncalc$Main$Empty;
-							} else {
-								return _p9._0;
-							}
-						}()
+						stack: A2(
+							_oherrala$rpncalc$Main$stackOp,
+							F2(
+								function (x, y) {
+									return x + y;
+								}),
+							model.stack)
 					});
 			case 'Subtraction':
 				return _elm_lang$core$Native_Utils.update(
 					model,
 					{
-						stack: function () {
-							var _p10 = A2(
-								_oherrala$rpncalc$Main$stackOp,
-								F2(
-									function (x, y) {
-										return x - y;
-									}),
-								model.stack);
-							if (_p10.ctor === 'Nothing') {
-								return _oherrala$rpncalc$Main$Empty;
-							} else {
-								return _p10._0;
-							}
-						}()
+						stack: A2(
+							_oherrala$rpncalc$Main$stackOp,
+							F2(
+								function (x, y) {
+									return x - y;
+								}),
+							model.stack)
 					});
 			default:
 				return _elm_lang$core$Native_Utils.update(
 					model,
 					{
-						stack: function () {
-							var _p11 = A2(
-								_oherrala$rpncalc$Main$stackOp,
-								F2(
-									function (x, y) {
-										return x * y;
-									}),
-								model.stack);
-							if (_p11.ctor === 'Nothing') {
-								return _oherrala$rpncalc$Main$Empty;
-							} else {
-								return _p11._0;
-							}
-						}()
+						stack: A2(
+							_oherrala$rpncalc$Main$stackOp,
+							F2(
+								function (x, y) {
+									return x * y;
+								}),
+							model.stack)
 					});
 		}
 	});

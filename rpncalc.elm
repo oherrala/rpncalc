@@ -10,8 +10,10 @@ main =
 
 type alias Model =
   { stack : Stack
-  , prompt : Maybe Int
+  , prompt : Prompt
   }
+
+type alias Prompt = Maybe Int
 
 type Stack
   = Item Int Stack
@@ -22,6 +24,7 @@ type Msg
   | Enter
   | Addition
   | Subtraction
+  | Multiplication
 
 model : Model
 model =
@@ -44,45 +47,48 @@ update msgs model =
         Just i ->
           { model | stack = push model.stack i, prompt = Nothing }
     Addition ->
-      { model | stack =
-          case stackOp (+) model.stack of
-            Nothing -> Empty
-            Just s -> s
-      }
+      { model | stack = stackOp (+) model.stack }
     Subtraction ->
-      { model | stack =
-          case stackOp (-) model.stack of
-            Nothing -> Empty
-            Just s -> s
-      }
+      { model | stack = stackOp (-) model.stack }
+    Multiplication ->
+      { model | stack = stackOp (*) model.stack }
 
 view : Model -> Html Msg
 view model =
-  div []
-    [ pre [] [ viewPrompt model.prompt ]
-    , pre [] (viewStack model.stack)
-    , table [] [ tr [] [ td [] [ buttonNum 7 ]
-                       , td [] [ buttonNum 8 ]
-                       , td [] [ buttonNum 9 ]
-                       , td [] [ buttonAdd ]
-                       ]
-               , tr [] [ td [] [ buttonNum 4 ]
-                       , td [] [ buttonNum 5 ]
-                       , td [] [ buttonNum 6 ]
-                       , td [] [ buttonSub ]
-                       ]
-               , tr [] [ td [] [ buttonNum 1 ]
-                       , td [] [ buttonNum 2 ]
-                       , td [] [ buttonNum 3 ]
-                       ]
-               , tr [] [ td [] [ buttonNum 0 ]
-                       , td [] [ ]
-                       , td [] [ ]
-                       , td [] [ buttonEnter ]
-                       ]
-               ]
+  let
+    buttonNum n = button [ onClick (Number n) ] [ text (toString n) ]
+    buttonEnter = button [ onClick Enter ] [ text "enter" ]
+    buttonAdd   = button [ onMouseDown Enter, onMouseUp Addition ] [ text "+" ]
+    buttonSub   = button [ onMouseDown Enter, onMouseUp Subtraction ] [ text "-" ]
+    buttonMul   = button [ onMouseDown Enter, onMouseUp Multiplication ] [ text "*" ]
+  in
+    div []
+      [ pre [] [ viewPrompt model.prompt ]
+      , pre [] (viewStack model.stack)
+      , table [] [ tr [] [ td [] [ buttonNum 7 ]
+                         , td [] [ buttonNum 8 ]
+                         , td [] [ buttonNum 9 ]
+                         , td [] [ buttonAdd ]
+                         ]
+                  , tr [] [ td [] [ buttonNum 4 ]
+                          , td [] [ buttonNum 5 ]
+                          , td [] [ buttonNum 6 ]
+                          , td [] [ buttonSub ]
+                          ]
+                  , tr [] [ td [] [ buttonNum 1 ]
+                          , td [] [ buttonNum 2 ]
+                          , td [] [ buttonNum 3 ]
+                          , td [] [ buttonMul ]
+                          ]
+                  , tr [] [ td [] [ buttonNum 0 ]
+                          , td [] [ ]
+                          , td [] [ ]
+                          , td [] [ buttonEnter ]
+                          ]
+                  ]
     ]
 
+viewPrompt : Prompt -> Html Msg
 viewPrompt prompt =
   let prefix = "> "
   in
@@ -90,6 +96,7 @@ viewPrompt prompt =
       Nothing -> text prefix
       Just i -> text (prefix ++ toString i)
 
+viewStack : Stack -> List (Html Msg)
 viewStack stack =
   let viewStack' stack depth =
     case stack of
@@ -100,30 +107,23 @@ viewStack stack =
   in
     viewStack' stack 1
 
-buttonNum n = button [ onClick (Number n) ] [ text (toString n) ]
-buttonEnter = button [ onClick Enter ] [ text "enter" ]
-buttonAdd = button [ onClick Addition ] [ text "+" ]
-buttonSub = button [ onClick Subtraction ] [ text "-" ]
-
 -- Push item into stack
 push : Stack -> Int -> Stack
 push stack i = Item i stack
 
 -- Pop item from stack
-pop : Stack -> Maybe (Stack, Int)
+pop : Stack -> (Stack, Maybe Int)
 pop stack =
   case stack of
-    Empty -> Nothing
-    Item i stack -> Just (stack, i)
+    Empty -> (Empty, Nothing)
+    Item i stack -> (stack, Just i)
 
 -- Execute operation on stack
-stackOp : (Int -> Int -> Int) -> Stack -> Maybe Stack
+stackOp : (Int -> Int -> Int) -> Stack -> Stack
 stackOp f s1 =
-    case pop s1 of
-      Nothing -> Nothing
-      Just (s2, i1) ->
-        case pop s2 of
-          Nothing -> Nothing
-          Just (s3, i2) ->
-            let res = f i2 i1
-            in Just (Item res s3)
+    let (s2, value1) = pop s1
+        (s3, value2) = pop s2
+    in
+      case (value1, value2) of
+        (Just i1, Just i2) -> push s3 (f i2 i1)
+        _ -> Empty

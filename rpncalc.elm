@@ -9,14 +9,14 @@ main =
                       , update = update }
 
 type alias Model =
-  { stack : Stack
+  { stack : Stack Int
   , prompt : Prompt
   }
 
 type alias Prompt = Maybe Int
 
-type Stack
-  = Item Int Stack
+type Stack a
+  = Item a (Stack a)
   | Empty
 
 type Msg
@@ -96,7 +96,7 @@ viewPrompt prompt =
       Nothing -> text prefix
       Just i -> text (prefix ++ toString i)
 
-viewStack : Stack -> List (Html Msg)
+viewStack : Stack a -> List (Html Msg)
 viewStack stack =
   let viewStack' stack depth =
     case stack of
@@ -108,18 +108,18 @@ viewStack stack =
     viewStack' stack 1
 
 -- Push item into stack
-push : Stack -> Int -> Stack
+push : Stack a -> a -> Stack a
 push stack i = Item i stack
 
 -- Pop item from stack
-pop : Stack -> (Stack, Maybe Int)
+pop : Stack a -> (Stack a, Maybe a)
 pop stack =
   case stack of
     Empty -> (Empty, Nothing)
     Item i stack -> (stack, Just i)
 
 -- Execute operation on stack
-stackOp : (Int -> Int -> Int) -> Stack -> Stack
+stackOp : (a -> a -> a) -> Stack a -> Stack a
 stackOp f s1 =
     let (s2, value1) = pop s1
         (s3, value2) = pop s2

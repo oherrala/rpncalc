@@ -8,9 +8,9 @@ main =
                       , view = view
                       , update = update }
 
-type alias Model =
-  { stack : Stack Int
-  , prompt : Prompt Int
+type alias Model a =
+  { stack : Stack a
+  , prompt : Prompt a
   }
 
 type alias Prompt a = Maybe a
@@ -26,12 +26,12 @@ type Msg
   | Subtraction
   | Multiplication
 
-model : Model
+model : Model a
 model =
   { stack = Empty
   , prompt = Nothing }
 
-update : Msg -> Model -> Model
+update : Msg -> Model Int -> Model Int
 update msgs model =
   case msgs of
     Number i ->
@@ -53,7 +53,7 @@ update msgs model =
     Multiplication ->
       { model | stack = stackOp (*) model.stack }
 
-view : Model -> Html Msg
+view : Model a -> Html Msg
 view model =
   let
     buttonNum n = button [ onClick (Number n) ] [ text (toString n) ]

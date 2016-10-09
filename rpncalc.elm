@@ -10,10 +10,10 @@ main =
 
 type alias Model =
   { stack : Stack Int
-  , prompt : Prompt
+  , prompt : Prompt Int
   }
 
-type alias Prompt = Maybe Int
+type alias Prompt a = Maybe a
 
 type Stack a
   = Item a (Stack a)
@@ -88,7 +88,7 @@ view model =
                   ]
     ]
 
-viewPrompt : Prompt -> Html Msg
+viewPrompt : Prompt a -> Html Msg
 viewPrompt prompt =
   let prefix = "> "
   in
